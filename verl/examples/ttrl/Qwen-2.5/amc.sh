@@ -48,7 +48,7 @@ python -m verl.trainer.main_ppo \
   data.train_batch_size=$DATA_TRAIN_BATCH_SIZE \
   data.filter_overlong_prompts=True \
   data.truncation='error' \
-  data.suffix_prompt='"\nPlease reason step by step, and put your final answer within \boxed{}."' \
+  +data.suffix_prompt='"\nPlease reason step by step, and put your final answer within \boxed{}."' \
   actor_rollout_ref.model.path=$BACKBONE_PATH \
   actor_rollout_ref.model.enable_gradient_checkpointing=True \
   actor_rollout_ref.model.use_remove_padding=True \
