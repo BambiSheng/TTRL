@@ -16,6 +16,10 @@ def make_map_fn(split, source=None):
             data = {
                 "data_source": data_source,
                 "prompt": [
+                     {
+                        "role": "system",
+                        "content": r'Please reason step by step, and put your final answer within \boxed{}',
+                     },
                     {
                         "role": "user",
                         "content": question,
