@@ -47,6 +47,7 @@ python -m verl.trainer.main_ppo \
   data.max_response_length=$MAX_RESPONSE_LENGTH \
   data.train_batch_size=$DATA_TRAIN_BATCH_SIZE \
   data.filter_overlong_prompts=True \
+  +data.suffix_prompt='"\nPlease reason step by step, and put your final answer within \boxed{}."' \
   data.truncation='error' \
   actor_rollout_ref.model.path=$BACKBONE_PATH \
   actor_rollout_ref.model.enable_gradient_checkpointing=True \
@@ -85,6 +86,8 @@ python -m verl.trainer.main_ppo \
   critic.model.fsdp_config.optimizer_offload=False \
   algorithm.kl_ctrl.kl_coef=0.00 \
   algorithm.adv_estimator=$ADVANTAGE \
+  custom_reward_function.path="./verl/utils/reward_score/ttrl_math/__init__.py" \
+  custom_reward_function.name=reward_func \
   ttrl.enable=True \
   ttrl.n_votes_per_prompt=$N_VOTES_PER_PROMPT \
   ttrl.n_samples_per_prompt=$N_SAMPLES_PER_PROMPT \
