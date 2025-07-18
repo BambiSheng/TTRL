@@ -77,6 +77,7 @@ python -m verl.trainer.main_ppo \
   actor_rollout_ref.rollout.val_kwargs.temperature=0.6 \
   actor_rollout_ref.rollout.max_model_len=$((MAX_PROMPT_LENGTH + MAX_RESPONSE_LENGTH)) \
   actor_rollout_ref.rollout.max_num_batched_tokens=$((MAX_PROMPT_LENGTH + MAX_RESPONSE_LENGTH)) \
+  actor_rollout_ref.actor.max_grad_norm=3.0 \
   critic.optim.lr=9e-6 \
   critic.model.use_remove_padding=True \
   critic.model.path=$BACKBONE_PATH \
