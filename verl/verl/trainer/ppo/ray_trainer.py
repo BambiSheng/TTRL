@@ -1282,6 +1282,7 @@ class RayPPOTrainer:
                             batch.batch["token_level_scores_original"] = reward_tensor_original
                             #TODO compute ttrl metrics
                             ttrl_metrics = compute_ttrl_metrics(batch, self.config.ttrl.n_samples_per_prompt)
+                            self._balance_batch(batch, metrics=metrics)
                             for key, value in ttrl_metrics.items():
                                 metrics.update({f"train/{key}": value})
 

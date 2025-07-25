@@ -13,9 +13,9 @@
 # limitations under the License.
 from typing import List
 from collections import Counter
+import torch
 import numpy as np
 from verl.utils.reward_score.ttrl_math import extract_answer, simplify_expression_string, grade
-import copy
 
 def select_top_k_per_prompt(data, n_votes_per_prompt, n_samples_per_prompt):
     """
@@ -133,16 +133,17 @@ def compute_ttrl_metrics(batch, n):
     num_prompts = len(batch) // n
 
     # Sort the batch by the ID
-    sorted_batch = copy.deepcopy(batch)
-    sorted_batch = sorted(sorted_batch, key=lambda x: x.non_tensor_batch["extra_info"]["index"])
+    idx = sorted(range(len(batch)), key=lambda x: batch[x].non_tensor_batch["extra_info"]["index"])
+    idx = torch.tensor(idx)
+    batch.reorder(idx)
 
     majority_reward = []
     gt_reward = []
     majority_label = []
     gt_label = []
 
-    for i in range(len(sorted_batch)):
-        data_item = sorted_batch[i]
+    for i in range(len(batch)):
+        data_item = batch[i]
         majority_reward.append(data_item.batch["token_level_scores"].sum().item())
         gt_reward.append(data_item.batch["token_level_scores_original"].sum().item())
         majority_label.append(data_item.non_tensor_batch["reward_model"]["majority_gt"])
