@@ -1275,17 +1275,6 @@ class RayPPOTrainer:
                         else:
                             batch.batch["token_level_rewards"] = batch.batch["token_level_scores"]
 
-                        if self.config.get("ttrl", {}).get("enable", False):
-                            from verl.trainer.ppo.ttrl_utils import apply_original_gt, compute_ttrl_metrics
-                            batch = apply_original_gt(batch)
-                            reward_tensor_original, reward_extra_infos_dict_original = compute_reward(batch, self.reward_fn)
-                            batch.batch["token_level_scores_original"] = reward_tensor_original
-                            #TODO compute ttrl metrics
-                            ttrl_metrics = compute_ttrl_metrics(batch, self.config.ttrl.n_samples_per_prompt)
-                            self._balance_batch(batch, metrics=metrics)
-                            for key, value in ttrl_metrics.items():
-                                metrics.update({f"train/{key}": value})
-
                         # compute advantages, executed on the driver process
 
                         norm_adv_by_std_in_grpo = self.config.algorithm.get(
@@ -1318,6 +1307,16 @@ class RayPPOTrainer:
                             actor_output = self.actor_rollout_wg.update_actor(batch)
                         actor_output_metrics = reduce_metrics(actor_output.meta_info["metrics"])
                         metrics.update(actor_output_metrics)
+
+                    if self.config.get("ttrl", {}).get("enable", False):
+                        from verl.trainer.ppo.ttrl_utils import apply_original_gt, compute_ttrl_metrics
+                        batch = apply_original_gt(batch)
+                        reward_tensor_original, reward_extra_infos_dict_original = compute_reward(batch, self.reward_fn)
+                        batch.batch["token_level_scores_original"] = reward_tensor_original
+                        # Compute ttrl metrics
+                        ttrl_metrics = compute_ttrl_metrics(batch, self.config.ttrl.n_samples_per_prompt)
+                        for key, value in ttrl_metrics.items():
+                                metrics.update({f"train/{key}": value})
 
                     # Log rollout generations if enabled
                     rollout_data_dir = self.config.trainer.get("rollout_data_dir", None)

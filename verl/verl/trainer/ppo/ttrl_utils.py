@@ -134,8 +134,6 @@ def compute_ttrl_metrics(batch, n):
 
     # Sort the batch by the ID
     idx = sorted(range(len(batch)), key=lambda x: batch[x].non_tensor_batch["extra_info"]["index"])
-    idx = torch.tensor(idx)
-    batch.reorder(idx)
 
     majority_reward = []
     gt_reward = []
@@ -143,7 +141,7 @@ def compute_ttrl_metrics(batch, n):
     gt_label = []
 
     for i in range(len(batch)):
-        data_item = batch[i]
+        data_item = batch[idx[i]]
         majority_reward.append(data_item.batch["token_level_scores"].sum().item())
         gt_reward.append(data_item.batch["token_level_scores_original"].sum().item())
         majority_label.append(data_item.non_tensor_batch["reward_model"]["majority_gt"])
